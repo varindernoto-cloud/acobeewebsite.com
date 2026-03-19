@@ -892,7 +892,10 @@ async function sendEnquiry() {
         email: email,
         service: service || 'Not specified',
         message: message,
-        subject: `New Enquiry from ${fname} ${lname} — acobee.com`
+        subject: `New Enquiry from ${fname} ${lname} — acobee.com`,
+        from_name: 'Acobee Website Enquiry',
+        botcheck: false,
+        redirect: false
       })
     });
 
@@ -916,21 +919,25 @@ async function sendEnquiry() {
       }, 4000);
 
     } else {
-      throw new Error('Failed');
+      const data = await response.json();
+      throw new Error(data.message || 'Submission failed');
     }
 
   } catch (err) {
-    // Fallback to WhatsApp if Formspree fails
+    console.error('Web3Forms error:', err);
     btn.textContent = 'Send Enquiry →';
     btn.disabled = false;
-    alert('Email sending failed. Redirecting to WhatsApp...');
-    const text =
-      `Hello Acobee Aegis, I have a new enquiry:\n\n` +
-      `*Name:* ${fname} ${lname}\n` +
-      `*Email:* ${email}\n` +
-      `*Service:* ${service || 'Not specified'}\n` +
-      `*Message:* ${message}`;
-    window.open('https://wa.me/918556990715?text=' + encodeURIComponent(text), '_blank');
+    // Fallback to WhatsApp
+    const confirm = window.confirm(`⚠️ Email delivery failed.\n\nWould you like to send your enquiry via WhatsApp instead?`);
+    if (confirm) {
+      const text =
+        `Hello Acobee Aegis, I have a new enquiry:\n\n` +
+        `*Name:* ${fname} ${lname}\n` +
+        `*Email:* ${email}\n` +
+        `*Service:* ${service || 'Not specified'}\n` +
+        `*Message:* ${message}`;
+      window.open('https://wa.me/918556990715?text=' + encodeURIComponent(text), '_blank');
+    }
   }
 }
 
