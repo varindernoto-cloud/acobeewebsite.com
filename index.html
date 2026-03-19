@@ -784,7 +784,7 @@ footer { background: var(--black); border-top: 1px solid rgba(45,106,79,0.1); pa
         </select>
       </div>
       <div class="form-group"><label>Message</label><textarea id="cf-message" placeholder="Tell us about your business needs..."></textarea></div>
-      <button class="form-submit" onclick="sendToWhatsApp()">Send Enquiry →</button>
+      <button class="form-submit" onclick="sendEnquiry()">Send Enquiry →</button>
 
       <!-- Trust badges -->
       <div style="display:flex;flex-wrap:wrap;gap:1rem;margin-top:1.4rem;padding-top:1.2rem;border-top:1px solid rgba(45,106,79,0.1);">
@@ -847,27 +847,132 @@ footer { background: var(--black); border-top: 1px solid rgba(45,106,79,0.1); pa
 </footer>
 
 <script>
-function sendToWhatsApp() {
+async function sendEnquiry() {
   const fname   = (document.getElementById('cf-fname')?.value || '').trim();
   const lname   = (document.getElementById('cf-lname')?.value || '').trim();
   const email   = (document.getElementById('cf-email')?.value || '').trim();
   const service = (document.getElementById('cf-service')?.value || '').trim();
   const message = (document.getElementById('cf-message')?.value || '').trim();
 
+  // ── Validation ──
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!fname) {
+    showError('cf-fname', 'Please enter your First Name.'); return;
+  }
+  if (!email) {
+    showError('cf-email', 'Please enter your Email Address.'); return;
+  }
+  if (!emailRegex.test(email)) {
+    showError('cf-email', '⚠️ Invalid email address — please check and try again.'); return;
+  }
+  if (!service || service === 'Select a service...') {
+    showError('cf-service', '⚠️ Please select a Service Required.'); return;
+  }
+  if (!message) {
+    showError('cf-message', 'Please enter your Message.'); return;
+  }
+
+  // Clear any previous errors
+  clearErrors();
+
+  // Show sending state
+  const btn = document.querySelector('.form-submit');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  try {
+    // Send to Web3Forms → contact@acobee.com
+    const response = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        access_key: '8f9540b0-6408-4ff2-b413-a7b846687d4d',
+        name: `${fname} ${lname}`,
+        email: email,
+        service: service || 'Not specified',
+        message: message,
+        subject: `New Enquiry from ${fname} ${lname} — acobee.com`
+      })
+    });
+
+    if (response.ok) {
+      // Success — show thank you message
+      btn.textContent = '✅ Enquiry Sent!';
+      btn.style.background = '#2D6A4F';
+
+      // Clear the form
+      document.getElementById('cf-fname').value = '';
+      document.getElementById('cf-lname').value = '';
+      document.getElementById('cf-email').value = '';
+      document.getElementById('cf-service').value = '';
+      document.getElementById('cf-message').value = '';
+
+      // Reset button after 4 seconds
+      setTimeout(() => {
+        btn.textContent = 'Send Enquiry →';
+        btn.disabled = false;
+        btn.style.background = '';
+      }, 4000);
+
+    } else {
+      throw new Error('Failed');
+    }
+
+  } catch (err) {
+    // Fallback to WhatsApp if Formspree fails
+    btn.textContent = 'Send Enquiry →';
+    btn.disabled = false;
+    alert('Email sending failed. Redirecting to WhatsApp...');
+    const text =
+      `Hello Acobee Aegis, I have a new enquiry:\n\n` +
+      `*Name:* ${fname} ${lname}\n` +
+      `*Email:* ${email}\n` +
+      `*Service:* ${service || 'Not specified'}\n` +
+      `*Message:* ${message}`;
+    window.open('https://wa.me/918556990715?text=' + encodeURIComponent(text), '_blank');
+  }
+}
+
+function showError(fieldId, msg) {
+  clearErrors();
+  const field = document.getElementById(fieldId);
+  if (!field) return;
+  field.style.borderColor = '#e53e3e';
+  field.style.boxShadow = '0 0 0 3px rgba(229,62,62,0.15)';
+  const err = document.createElement('div');
+  err.className = 'form-error-msg';
+  err.style.cssText = 'color:#e53e3e;font-size:0.78rem;margin-top:0.4rem;font-family:monospace;letter-spacing:0.3px;';
+  err.textContent = msg;
+  field.parentNode.appendChild(err);
+  field.focus();
+}
+
+function clearErrors() {
+  document.querySelectorAll('.form-error-msg').forEach(e => e.remove());
+  ['cf-fname','cf-email','cf-message','cf-service'].forEach(id => {
+    const f = document.getElementById(id);
+    if (f) { f.style.borderColor = ''; f.style.boxShadow = ''; }
+  });
+}
+
+function sendToWhatsApp() {
+  const fname   = (document.getElementById('cf-fname')?.value || '').trim();
+  const lname   = (document.getElementById('cf-lname')?.value || '').trim();
+  const email   = (document.getElementById('cf-email')?.value || '').trim();
+  const service = (document.getElementById('cf-service')?.value || '').trim();
+  const message = (document.getElementById('cf-message')?.value || '').trim();
   if (!fname || !email || !message) {
     alert('Please fill in at least your First Name, Email and Message.');
     return;
   }
-
   const text =
     `Hello Acobee Aegis, I have a new enquiry:\n\n` +
     `*Name:* ${fname} ${lname}\n` +
     `*Email:* ${email}\n` +
     `*Service:* ${service || 'Not specified'}\n` +
     `*Message:* ${message}`;
-
-  const url = 'https://wa.me/918556990715?text=' + encodeURIComponent(text);
-  window.open(url, '_blank');
+  window.open('https://wa.me/918556990715?text=' + encodeURIComponent(text), '_blank');
 }
 </script>
 
