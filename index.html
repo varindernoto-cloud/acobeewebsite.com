@@ -883,23 +883,24 @@ async function sendEnquiry() {
 
   try {
     // Send to Web3Forms → contact@acobee.com
+    const formData = new FormData();
+    formData.append('access_key', '8f9540b0-6408-4ff2-b413-a7b846687d4d');
+    formData.append('name', `${fname} ${lname}`);
+    formData.append('email', email);
+    formData.append('service', service || 'Not specified');
+    formData.append('message', message);
+    formData.append('subject', `New Enquiry from ${fname} ${lname} — acobee.com`);
+    formData.append('from_name', 'Acobee Website Enquiry');
+    formData.append('botcheck', '');
+
     const response = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({
-        access_key: '8f9540b0-6408-4ff2-b413-a7b846687d4d',
-        name: `${fname} ${lname}`,
-        email: email,
-        service: service || 'Not specified',
-        message: message,
-        subject: `New Enquiry from ${fname} ${lname} — acobee.com`,
-        from_name: 'Acobee Website Enquiry',
-        botcheck: false,
-        redirect: false
-      })
+      body: formData
     });
 
-    if (response.ok) {
+    const data = await response.json();
+
+    if (data.success) {
       // Success — show thank you message
       btn.textContent = '✅ Enquiry Sent!';
       btn.style.background = '#2D6A4F';
@@ -919,7 +920,6 @@ async function sendEnquiry() {
       }, 4000);
 
     } else {
-      const data = await response.json();
       throw new Error(data.message || 'Submission failed');
     }
 
