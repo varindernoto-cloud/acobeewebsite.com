@@ -36,7 +36,7 @@ body {
   cursor: none;
 }
 
-/* CUSTOM CURSOR */
+/* CUSTOM CURSOR — desktop only */
 .cursor {
   width: 10px; height: 10px;
   background: var(--gold);
@@ -58,6 +58,12 @@ body {
 }
 body:hover .cursor { opacity: 1; }
 a:hover ~ .cursor, button:hover ~ .cursor { width: 20px; height: 20px; }
+
+/* Hide custom cursor on touch/mobile devices */
+@media (hover: none) and (pointer: coarse) {
+  .cursor, .cursor-ring { display: none !important; }
+  body { cursor: auto !important; }
+}
 
 /* GRAIN OVERLAY */
 body::before {
@@ -1016,17 +1022,19 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 
-// Custom cursor
+// Custom cursor — desktop only
 const cursor = document.getElementById('cursor');
 const ring = document.getElementById('cursorRing');
 let mx = 0, my = 0, rx = 0, ry = 0;
-document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx+'px'; cursor.style.top = my+'px'; });
+if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx+'px'; cursor.style.top = my+'px'; });
 function animateRing(){ rx += (mx-rx)*0.12; ry += (my-ry)*0.12; ring.style.left = rx+'px'; ring.style.top = ry+'px'; requestAnimationFrame(animateRing); }
 animateRing();
 document.querySelectorAll('a,button,.svc-card,.testi-card,.insight-card,.focus-item').forEach(el => {
   el.addEventListener('mouseenter', () => { cursor.style.width='18px'; cursor.style.height='18px'; ring.style.width='52px'; ring.style.height='52px'; });
   el.addEventListener('mouseleave', () => { cursor.style.width='10px'; cursor.style.height='10px'; ring.style.width='36px'; ring.style.height='36px'; });
 });
+} // end desktop cursor
 
 // Scroll reveals
 const obs = new IntersectionObserver(entries => {
