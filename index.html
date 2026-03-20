@@ -65,6 +65,29 @@ a:hover ~ .cursor, button:hover ~ .cursor { width: 20px; height: 20px; }
   body { cursor: auto !important; }
 }
 
+/* HAMBURGER MENU */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  z-index: 600;
+}
+.hamburger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--navy);
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+.hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
 /* GRAIN OVERLAY */
 body::before {
   content: '';
@@ -437,7 +460,24 @@ footer { background: var(--black); border-top: 1px solid rgba(45,106,79,0.1); pa
   .focus-visual { display: none; }
   .form-row { grid-template-columns: 1fr; }
   .nav-links { display: none; }
+  .nav-links.open {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: #fff;
+    padding: 5rem 2rem 2rem;
+    z-index: 550;
+    gap: 0;
+    box-shadow: 0 8px 32px rgba(45,106,79,0.15);
+  }
+  .nav-links.open li { border-bottom: 1px solid rgba(45,106,79,0.08); }
+  .nav-links.open a { display: block; padding: 1rem 0; font-size: 0.85rem; }
+  .hamburger { display: flex; }
   .hero-title { font-size: 3.2rem; }
+  .hero-overlay { padding: 0 1.5rem; }
+  .hero-eyebrow { font-size: 0.55rem; letter-spacing: 3px; text-align: center; white-space: normal; padding: 0 1rem; }
+  .hero-sub { font-size: 0.7rem; letter-spacing: 1.5px; padding: 0 1rem; }
   .nav-logo-text { font-size: 1.35rem; letter-spacing: 0px; line-height: 1.2; }
   .nav-logo-text span { font-size: 0.75rem; letter-spacing: 1px; opacity:0.75; }
   .nav-logo-icon { height: 44px !important; width: 44px !important; }
@@ -446,6 +486,7 @@ footer { background: var(--black); border-top: 1px solid rgba(45,106,79,0.1); pa
 }
 @media(max-width:480px){
   .hero-title { font-size: 2.4rem; }
+  .hero-eyebrow { font-size: 0.5rem; letter-spacing: 2px; }
   .s-title { font-size: 2.2rem; }
   .nav-logo-text { font-size: 1.15rem; font-weight: 800; letter-spacing: 0px; line-height: 1.2; }
   .nav-logo-text span { display: block; font-size: 0.65rem; letter-spacing: 0.5px; opacity: 0.75; white-space: nowrap; }
@@ -473,13 +514,16 @@ footer { background: var(--black); border-top: 1px solid rgba(45,106,79,0.1); pa
       <span>Solutions Pvt Ltd</span>
     </div>
   </div>
-  <ul class="nav-links">
-    <li><a href="#home">Home</a></li>
-    <li><a href="#insights">Blog</a></li>
-    <li><a href="#services">Services</a></li>
-    <li><a href="#about">Our Story</a></li>
-    <li><a href="#contact" class="nav-cta">Contact</a></li>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#home" onclick="closeMenu()">Home</a></li>
+    <li><a href="#insights" onclick="closeMenu()">Blog</a></li>
+    <li><a href="#services" onclick="closeMenu()">Services</a></li>
+    <li><a href="#about" onclick="closeMenu()">Our Story</a></li>
+    <li><a href="#contact" class="nav-cta" onclick="closeMenu()">Contact</a></li>
   </ul>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
 <!-- HERO -->
@@ -1020,6 +1064,30 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     const target = document.querySelector(a.getAttribute('href'));
     if(target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
+});
+
+// Hamburger menu
+function toggleMenu() {
+  const nav = document.getElementById('nav-links');
+  const btn = document.getElementById('hamburger');
+  nav.classList.toggle('open');
+  btn.classList.toggle('open');
+  document.body.style.overflow = nav.classList.contains('open') ? 'hidden' : '';
+}
+function closeMenu() {
+  const nav = document.getElementById('nav-links');
+  const btn = document.getElementById('hamburger');
+  nav.classList.remove('open');
+  btn.classList.remove('open');
+  document.body.style.overflow = '';
+}
+// Close menu on outside click
+document.addEventListener('click', function(e) {
+  const nav = document.getElementById('nav-links');
+  const btn = document.getElementById('hamburger');
+  if (nav && nav.classList.contains('open') && !nav.contains(e.target) && !btn.contains(e.target)) {
+    closeMenu();
+  }
 });
 
 // Custom cursor — desktop only
