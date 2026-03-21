@@ -527,6 +527,17 @@ footer { background: var(--black); border-top: 1px solid rgba(45,106,79,0.1); pa
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
 
+<!-- MOBILE MENU OVERLAY -->
+<div id="mobile-menu" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#ffffff;z-index:99999;padding:100px 2rem 2rem;overflow-y:auto;">
+  <ul style="list-style:none;margin:0;padding:0;">
+    <li style="border-bottom:1px solid rgba(45,106,79,0.15);"><a href="#home" onclick="closeMenu()" style="display:block;padding:1.2rem 0.5rem;font-size:1.1rem;font-weight:700;color:#2D6A4F;letter-spacing:2px;text-transform:uppercase;text-decoration:none;font-family:sans-serif;">Home</a></li>
+    <li style="border-bottom:1px solid rgba(45,106,79,0.15);"><a href="#insights" onclick="closeMenu()" style="display:block;padding:1.2rem 0.5rem;font-size:1.1rem;font-weight:700;color:#2D6A4F;letter-spacing:2px;text-transform:uppercase;text-decoration:none;font-family:sans-serif;">Blog</a></li>
+    <li style="border-bottom:1px solid rgba(45,106,79,0.15);"><a href="#services" onclick="closeMenu()" style="display:block;padding:1.2rem 0.5rem;font-size:1.1rem;font-weight:700;color:#2D6A4F;letter-spacing:2px;text-transform:uppercase;text-decoration:none;font-family:sans-serif;">Services</a></li>
+    <li style="border-bottom:1px solid rgba(45,106,79,0.15);"><a href="#about" onclick="closeMenu()" style="display:block;padding:1.2rem 0.5rem;font-size:1.1rem;font-weight:700;color:#2D6A4F;letter-spacing:2px;text-transform:uppercase;text-decoration:none;font-family:sans-serif;">Our Story</a></li>
+    <li><a href="#contact" onclick="closeMenu()" style="display:block;padding:1.2rem 0.5rem;font-size:1.1rem;font-weight:700;color:#CFAB68;letter-spacing:2px;text-transform:uppercase;text-decoration:none;font-family:sans-serif;">Contact</a></li>
+  </ul>
+</div>
+
 <!-- NAV -->
 <nav>
   <div class="nav-logo">
@@ -537,11 +548,11 @@ footer { background: var(--black); border-top: 1px solid rgba(45,106,79,0.1); pa
     </div>
   </div>
   <ul class="nav-links" id="nav-links">
-    <li><a href="#home" onclick="closeMenu()">Home</a></li>
-    <li><a href="#insights" onclick="closeMenu()">Blog</a></li>
-    <li><a href="#services" onclick="closeMenu()">Services</a></li>
-    <li><a href="#about" onclick="closeMenu()">Our Story</a></li>
-    <li><a href="#contact" class="nav-cta" onclick="closeMenu()">Contact</a></li>
+    <li><a href="#home">Home</a></li>
+    <li><a href="#insights">Blog</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#about">Our Story</a></li>
+    <li><a href="#contact" class="nav-cta">Contact</a></li>
   </ul>
   <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu" style="z-index:99999;position:relative;">
     <span></span><span></span><span></span>
@@ -1090,27 +1101,20 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
 // Hamburger menu
 function toggleMenu() {
-  const nav = document.getElementById('nav-links');
+  const menu = document.getElementById('mobile-menu');
   const btn = document.getElementById('hamburger');
-  nav.classList.toggle('open');
-  btn.classList.toggle('open');
-  document.body.style.overflow = nav.classList.contains('open') ? 'hidden' : '';
+  const isOpen = menu.style.display === 'block';
+  menu.style.display = isOpen ? 'none' : 'block';
+  btn.classList.toggle('open', !isOpen);
+  document.body.style.overflow = isOpen ? '' : 'hidden';
 }
 function closeMenu() {
-  const nav = document.getElementById('nav-links');
+  const menu = document.getElementById('mobile-menu');
   const btn = document.getElementById('hamburger');
-  nav.classList.remove('open');
+  menu.style.display = 'none';
   btn.classList.remove('open');
   document.body.style.overflow = '';
 }
-// Close menu on outside click
-document.addEventListener('click', function(e) {
-  const nav = document.getElementById('nav-links');
-  const btn = document.getElementById('hamburger');
-  if (nav && nav.classList.contains('open') && !nav.contains(e.target) && !btn.contains(e.target)) {
-    closeMenu();
-  }
-});
 
 // Custom cursor — desktop only
 const cursor = document.getElementById('cursor');
