@@ -75,15 +75,17 @@ a:hover ~ .cursor, button:hover ~ .cursor { width: 20px; height: 20px; }
   cursor: pointer;
   padding: 6px;
   z-index: 600;
+  position: relative;
 }
 .hamburger span {
   display: block;
-  width: 24px;
-  height: 2px;
+  width: 26px;
+  height: 2.5px;
   background: var(--navy);
   border-radius: 2px;
   transition: all 0.3s;
 }
+.hamburger.open span { background: #2D6A4F; }
 .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
 .hamburger.open span:nth-child(2) { opacity: 0; }
 .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
@@ -464,16 +466,32 @@ footer { background: var(--black); border-top: 1px solid rgba(45,106,79,0.1); pa
     display: flex;
     flex-direction: column;
     position: fixed;
-    top: 0; left: 0; right: 0;
-    background: #fff;
-    padding: 5rem 2rem 2rem;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #ffffff;
+    padding: 6rem 2rem 2rem;
     z-index: 550;
     gap: 0;
     box-shadow: 0 8px 32px rgba(45,106,79,0.15);
+    overflow-y: auto;
   }
-  .nav-links.open li { border-bottom: 1px solid rgba(45,106,79,0.08); }
-  .nav-links.open a { display: block; padding: 1rem 0; font-size: 0.85rem; }
-  .hamburger { display: flex; }
+  .nav-links.open li { 
+    border-bottom: 1px solid rgba(45,106,79,0.1); 
+    list-style: none;
+  }
+  .nav-links.open a { 
+    display: block; 
+    padding: 1.2rem 0; 
+    font-size: 1rem;
+    font-weight: 700;
+    color: #2D6A4F !important;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: 'DM Mono', monospace;
+    text-decoration: none;
+    opacity: 1 !important;
+  }
+  .nav-links.open a:hover { color: #CFAB68 !important; }
+  .hamburger { display: flex; z-index: 600; position: relative; }
   .hero-title { font-size: 3.2rem; }
   .hero-overlay { padding: 0 1.5rem; }
   .hero-eyebrow { font-size: 0.55rem; letter-spacing: 3px; text-align: center; white-space: normal; padding: 0 1rem; }
